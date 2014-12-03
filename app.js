@@ -2,7 +2,7 @@
 // npm install
 // foreman start web
 // localhost:5000
- 
+
 var http = require('http'),
   url = require('url'),
   fs = require('fs'),
@@ -75,7 +75,7 @@ var server = app.listen(app.get('port'));
 var io = require('socket.io').listen(server);
 
 //mongoClient.connect("mongodb://127.0.0.1:27017/mydb", function(err, db) {
-mongoClient.connect(MONGOLAB_BANK, function(err, db) {
+mongoClient.connect('MONGOLAB_BANK', function(err, db) {
 
   io.sockets.on('connection', function (socket) { // each socket is linked to a player
     num_players++
