@@ -75,7 +75,9 @@ var server = app.listen(app.get('port'));
 var io = require('socket.io').listen(server);
 
 //mongoClient.connect("mongodb://127.0.0.1:27017/mydb", function(err, db) {
-mongoClient.connect('MONGOLAB_BANK', function(err, db) {
+mongoClient.connect("mongodb://" + process.env.MONGOLAB_BANK_USER + ":" + 
+                    process.env.MONGOLAB_BANK_PASS + "@ds057000.mongolab.com:57000/bankvault", function(err, db) {
+
 
   io.sockets.on('connection', function (socket) { // each socket is linked to a player
     num_players++
