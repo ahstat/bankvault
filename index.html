@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>node side</title>
+  </head>
+ 
+  <body>
+    <h1>Vault breaker, on the node side!</h1>
+
+    <form action="/" method="post" id="form_proposition">
+      <input type="text" id="pass_proposition" placeholder="Guess the vault pass..." size="50" autofocus />
+      <input type="submit" value="Check" />
+    </form>
+
+    <section id="chat_area"></section>
+
+    <script src="https://code.jquery.com/jquery-1.10.1.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      var socket = io.connect(window.location.hostname);
+
+      // When we receive a message to show
+      socket.on('send_html', function(data) {
+        insert_message(data.message)
+      })
+
+      // Sending the form to the server
+      $('#form_proposition').submit(function () {
+        var pass_proposition = $('#pass_proposition').val();
+        socket.emit('pass_proposition', pass_proposition);
+        $('#pass_proposition').val('').focus(); // empty the form area and focus on it
+        return false; // prevent the classic form send behaviour
+      });
+
+      // Ask nickname
+      socket.on('ask_nickname', function() {
+        var nickname = prompt('What is your nickname?');
+        socket.emit('send_nickname', nickname);
+      })
+
+      // Print a message in the chat area
+      function insert_message(message) {
+        $('#chat_area').prepend(message);
+      }
+    </script>
+  </body>
+</html>
