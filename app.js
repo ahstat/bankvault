@@ -115,8 +115,8 @@ var add_new_vault = function() {
 var new_vault_player = function(socket) {
   if(vault_num < 10000) {
     new_vault();
-    socket.message = '<p> Vault ' + (vault_num-1) + ' is now open...' +
-                      vault_num + ' is the new vault to enter! </p>';
+    socket.message = 'Vault ' + (vault_num-1) + ' is open... ' +
+                      vault_num + ' is the new vault to holdup.';
     socket.broadcast.emit('send_html', {message: socket.message});
     // socket.emit('send_html', {message: socket.message});
   } 
@@ -126,10 +126,28 @@ var new_vault_player = function(socket) {
   }
 }
 
+// function when a player connects/disconnects
+var player_send_html = function(socket) {
+  console.log('Now ' + num_players + ' player(s).');
+  if(num_players==1) {
+    player_text = 'player';
+  }
+  else {
+    player_text = 'players';
+  }
+  socket.message = num_players + ' ' + player_text + ' online / Vault ' + vault_num + ".";
+  socket.emit('send_html', {message: socket.message});
+  socket.broadcast.emit('send_html', {message: socket.message});
+}
+
 // Server initialization
 new_vault();
 
 var app = express();
+
+//app.use('/static', express.static(__dirname + '/public'));
+app.use("/font", express.static(__dirname + '/font'));
+app.use("/img", express.static(__dirname + '/img'));
 
 app.get('/index.html', function(req, res) {
   fs.readFile('./index.html', 'utf-8', function(error, content) {
@@ -141,6 +159,11 @@ app.get('/index.html', function(req, res) {
 app.get('/about.html', function(req, res) {
   res.setHeader('Content-Type', 'text/plain');
   res.end('Hello everybody, everybody hello, hello everybody, everybody hello.');
+});
+
+app.get('/share.html', function(req, res) {
+  res.setHeader('Content-Type', 'text/plain');
+  res.end('Message de confirmation : le jeu a bien ete partage sur vos comptes facebook, twitter, linkedin, viadeo, instagram, qq, google plus, myspace, dailymotion, meetic, ovs, flickr, renren, pinterest, vine, wechat, youtube et le shout de riff.');
 });
 
 app.use(function(req, res, next){
@@ -157,10 +180,8 @@ var io = require('socket.io').listen(server);
 
 io.sockets.on('connection', function (socket) { // each socket is linked to a player
   num_players++
-  console.log('Now ' + num_players + ' player(s).');
-        socket.message = '<p> Now ' + num_players + ' player(s).';
-        socket.emit('send_html', {message: socket.message});
-        socket.broadcast.emit('send_html', {message: socket.message});
+  player_send_html(socket);
+  socket.ban = false;
 
   // id 
   socket.id_player = shortid.generate();
@@ -213,42 +234,58 @@ io.sockets.on('connection', function (socket) { // each socket is linked to a pl
       if(socket.pass > -0.5 & socket.pass < 9999.5) {
         socket.newDate = Date.now()/1000; //date in seconds
 
-        console.log('( date: ' + Math.floor(socket.newDate) + ' / pass: ' + socket.pass +
-                    ' / vault_num: ' + vault_num + ' / id: ' + socket.id_player + 
-                    ' / ip: ' + socket.ip_player + ' / pays: ' + socket.country + ')');
-
-        //mongo connexion
-        var attempt = new AttemptsModel();
-        attempt.date = socket.newDate;
-        attempt.id = socket.id_player;
-        attempt.ip = socket.ip_player;
-        attempt.country = socket.country;
-        attempt.pass = socket.pass;
-        attempt.vault_num = vault_num;
-
-        attempt.save(function (err) {
-          if(err) {
-            console.log("Failed to insert attempt"); throw err;
-          }
-          console.log("Inserted attempt ");
-        });
-        //mongo connexion end
-
-        socket.win_vault_num = 0;
-
-        if(socket.pass == true_pass) {
-          socket.message = '<p><strong>' + socket.pass + 
-                           '</strong> is the correct password for the vault n°' +
-                           vault_num + '! Congratulations.</p>';
-          socket.emit('send_html', {message: socket.message});
-
-          socket.win_vault_num = vault_num;
-          socket.emit('ask_nickname');
-          new_vault_player(socket);
+        if(socket.ban == true) {
+          socket.emit('lose');
+        }
+        else if(socket.newDate - socket.oldDate < 0.5) {
+          console.log('warning! Attempts are too close');
+          socket.ban = true;
+          //against : 
+          //for (var i=0; i<10; i++) {
+          //  socket.emit('pass_proposition', ''+i);
+          //}
         }
         else {
-          socket.message = '<p><strong>' + socket.pass + '</strong> nop </p>';
-          socket.emit('send_html', {message: socket.message});
+          console.log('( date: ' + socket.newDate + ' / pass: ' + socket.pass +
+                      ' / vault_num: ' + vault_num + ' / id: ' + socket.id_player + 
+                      ' / ip: ' + socket.ip_player + ' / pays: ' + socket.country + ')');
+
+          //mongo connexion
+          var attempt = new AttemptsModel();
+          attempt.date = socket.newDate;
+          attempt.id = socket.id_player;
+          attempt.ip = socket.ip_player;
+          attempt.country = socket.country;
+          attempt.pass = socket.pass;
+          attempt.vault_num = vault_num;
+
+          attempt.save(function (err) {
+            if(err) {
+              console.log("Failed to insert attempt"); throw err;
+            }
+            console.log("Inserted attempt ");
+          });
+          //mongo connexion end
+
+          socket.win_vault_num = 0;
+
+          if(socket.pass == true_pass) {
+            //socket.message = '<strong>' + socket.pass + 
+            //                 '</strong> is the correct pass! for the vault' +
+            //                 vault_num + '!';
+            //socket.emit('send_html', {message: socket.message});
+            link = "chat.jpg";
+            socket.emit('win', link);
+
+            socket.win_vault_num = vault_num;
+            new_vault_player(socket);
+          }
+          else {
+            //socket.message = '<p><strong>' + socket.pass + '</strong> nop </p>';
+            //socket.emit('send_html', {message: socket.message});
+            socket.emit('lose');
+          }
+         socket.oldDate = socket.newDate;
         }
       }
     }
@@ -263,10 +300,12 @@ io.sockets.on('connection', function (socket) { // each socket is linked to a pl
       else if( !(typeof nickname == 'string' || nickname instanceof String) ) {
         nickname = 'anonymous'; 
       }
+      if(nickname.length > 15) { //abcdefghijklmnopqrstuvwxyz
+        nickname = nickname.substr(0, 15);
+      }
 
       socket.nickname = ent.encode(nickname);         
-      socket.message = '<p>The player who broke the vault n°' + socket.win_vault_num +
-                       ' is... <strong>' + socket.nickname + '</strong>! </p>';
+      socket.message = 'The winner for the vault ' + socket.win_vault_num + ' is... ' + socket.nickname + '.';
 
       //mongo connexion
       var win = new WinsModel();
@@ -299,9 +338,6 @@ io.sockets.on('connection', function (socket) { // each socket is linked to a pl
   // http://stackoverflow.com/questions/10342548/socket-io-disconnect-event-isnt-fired
   socket.on('disconnect', function () {
     num_players--
-    console.log('Now ' + num_players + ' player(s).');
-        socket.message = '<p> Now ' + num_players + ' player(s).';
-        socket.emit('send_html', {message: socket.message});
-        socket.broadcast.emit('send_html', {message: socket.message});
+    player_send_html(socket);
   });
 });
