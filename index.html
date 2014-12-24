@@ -135,9 +135,11 @@ span:hover .invisi { display: inline }
 /*
 http://www.jackbarber.co.uk/notes/facebook-like-box-not-loading-in-hidden-element
 */
+/*
 span:hover .normal { display: none }
 .invisi { opacity: 0; }
 span:hover .invisi { opacity: 100; }
+*/
 
 </style>
 </head>
@@ -170,7 +172,6 @@ span:hover .invisi { opacity: 100; }
 
 <div id="bottom" class="container" style="height:14%; width:40%;"> 
   <span style="float:left">
-    <span class="normal">share</span>
     <span class="invisi">
       <li><div class="fb-share-button" data-layout="button_count"></div></li>
       <li><a href="https://twitter.com/share" class="twitter-share-button" data-via="ahstat" data-hashtags="bankvault,webgame">Tweet</a>
@@ -179,10 +180,9 @@ span:hover .invisi { opacity: 100; }
   </span>
 
   <span style="float:right">
-    <span class="normal">about</span>
-    <span class="invisi">
-      <li><a href = "https://ahstat.wordpress.com/" target="_blank">by Alexis Huet</a></li>
-      <li><a href = "https://ahstat.wordpress.com/" target="_blank">@ahstat</a></li>
+    <span class="invisi"><a href = "https://ahstat.wordpress.com/" target="_blank">
+      <li>by</li>
+      <li>@ahstat</li></a>
     </span>
 </div>
 
