@@ -186,9 +186,9 @@ span:hover .invisi { opacity: 100; }
     </span>
 </div>
 
-<div class="margin" style="height:7%;"></div>
+<div class="margin" style="height:4%;"></div>
 
-<div id="chat_area" class="container" style="height:11%;"></div>
+<div id="chat_area" class="container" style="height:14%;"></div>
 
 <script src="/socket.io/socket.io.js"></script>
 <script>
