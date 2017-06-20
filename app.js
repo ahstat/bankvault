@@ -300,8 +300,8 @@ io.sockets.on('connection', function (socket) { // each socket is linked to a pl
       else if( !(typeof nickname == 'string' || nickname instanceof String) ) {
         nickname = 'anonymous'; 
       }
-      if(nickname.length > 15) { //abcdefghijklmnopqrstuvwxyz
-        nickname = nickname.substr(0, 15);
+      if(nickname.length > 30) { //abcdefghijklmnopqrstuvwxyz
+        nickname = nickname.substr(0, 30);
       }
 
       socket.nickname = ent.encode(nickname);         
