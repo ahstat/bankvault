@@ -1,22 +1,29 @@
 {
-    "name": "vault-breaker",
-    "version": "0.3.1",
-    "main": "app.js",
-    "scripts": {
-      "start": "node app.js"
-    },
-    "dependencies": {
-        "ent": "~2.0.0",
-        "shortid": "~2.1.3",
-        "express": "~4.10.4",
-        "socket.io": "~1.2.1",
-        "request": "~2.49.0",
-        "mongodb": "~2.0.9",
-        "mongoose": "~3.8.20"
-    },
-    "engines": {
-      "node": "0.10.x"
-    },
-    "author": "moi <ahstat@qq.com>",
-    "description": "un vault breaker classique"
+  "name": "bankvault",
+  "version": "1.0.0",
+  "description": "a simple vault breaker",
+  "main": "app.js",
+  "dependencies": {
+      "ent": "~2.2.0",
+      "shortid": "~2.2.8",
+      "express": "~4.15.3",
+      "request": "~2.81.0",
+      "mongodb": "~2.2.29",
+      "mongoose": "~4.10.8",
+      "socket.io": "~2.0.3"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://git.heroku.com/bankvault.git"
+  },
+  "keywords": [
+    "vault",
+    "breaker\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b["
+  ],
+  "author": "Alexis Huet",
+  "license": "Apache-2.0"
 }
