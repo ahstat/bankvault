@@ -1,7 +1,7 @@
 {
   "name": "bankvault",
   "version": "1.0.0",
-  "description": "a simple vault breaker",
+  "description": "Find the bankvault code with your numpad",
   "main": "app.js",
   "dependencies": {
       "ent": "~2.2.0",
@@ -14,15 +14,13 @@
   },
   "devDependencies": {},
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
-    "type": "git",
-    "url": "https://git.heroku.com/bankvault.git"
+    "type": "git"
   },
   "keywords": [
-    "vault",
-    "breaker\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b["
+    "game",
+    "demo"
   ],
   "author": "Alexis Huet",
   "license": "Apache-2.0"

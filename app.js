@@ -1,8 +1,3 @@
-// Load the app:
-// npm install
-// foreman start web
-// localhost:5000
-
 var http = require('http'),
   url = require('url'),
   fs = require('fs'),
@@ -20,7 +15,9 @@ var num_players = 0; // number of players
 
 // http://stackoverflow.com/questions/13200810/getting-herokus-config-vars-to-work-in-node-js
 //mongoose.connect("mongodb://127.0.0.1:27017/mydb", function(err) {
-mongoose.connect("mongodb://" + process.env.MONGOLAB_BANK_USER + ":" + process.env.MONGOLAB_BANK_PASS + "@ds057000.mongolab.com:57000/bankvault", function(err) {
+mongoose.connect("mongodb://" + process.env.MONGOLAB_BANK_USER + 
+                 ":" + process.env.MONGOLAB_BANK_PASS + 
+                 "@ds057000.mongolab.com:57000/bankvault", function(err) {
   if(err) {
     throw err;
   }
@@ -67,13 +64,14 @@ var new_vault = function() {
   if(vault_num == 0) { // server starts, try to find saved passes
     console.log(vault_num + " is vault_num");
     // http://stackoverflow.com/questions/4299991/how-to-sort-in-mongoose
-    var query = PassesModel.find(null).sort({ vault_num : "desc"}).limit(1); //the first one is the most recent
+    var query = PassesModel.find(null).sort({ vault_num : "desc"}).limit(1);
+    // .limit(1) takes the most recent element of vault_num
 
     query.exec(function (err, comms) {
       if(err) {
         throw err;
       }
-      if(comms.length != 0) { // le fichier n'est pas vide, on récupère le dernier pass
+      if(comms.length != 0) { // mongo file is not empty, retrieving last pass
         console.log("Server restarted, retrieving the current pass");
         console.log("vault_num " + comms[0].vault_num);
         console.log("true_pass " + comms[0].pass);
@@ -81,7 +79,7 @@ var new_vault = function() {
         true_pass = comms[0].pass;
         console.log('>>> Current secret pass: ' + true_pass + ' <<<');
       }
-      else { // le fichier est vide, c'est le premier lancement du serveur
+      else { // mongo file is empty, first launching time
         console.log("First launch, creating the new pass");
         add_new_vault();
       }
@@ -110,7 +108,6 @@ var add_new_vault = function() {
   console.log('>>> New secret pass: ' + true_pass + ' <<<');
 }
 
-
 // function when a player found a pass
 var new_vault_player = function(socket) {
   if(vault_num < 10000) {
@@ -135,7 +132,8 @@ var player_send_html = function(socket) {
   else {
     player_text = 'players';
   }
-  socket.message = num_players + ' ' + player_text + ' online / Vault ' + vault_num + ".";
+  socket.message = num_players + ' ' + player_text +
+                   ' online / Vault ' + vault_num + ".";
   socket.emit('send_html', {message: socket.message});
   socket.broadcast.emit('send_html', {message: socket.message});
 }
@@ -156,16 +154,6 @@ app.get('/index.html', function(req, res) {
   });
 });
 
-app.get('/about.html', function(req, res) {
-  res.setHeader('Content-Type', 'text/plain');
-  res.end('Hello everybody, everybody hello, hello everybody, everybody hello.');
-});
-
-app.get('/share.html', function(req, res) {
-  res.setHeader('Content-Type', 'text/plain');
-  res.end('Message de confirmation : le jeu a bien ete partage sur vos comptes facebook, twitter, linkedin, viadeo, instagram, qq, google plus, myspace, dailymotion, meetic, ovs, flickr, renren, pinterest, vine, wechat, youtube et le shout de riff.');
-});
-
 app.use(function(req, res, next){
   res.redirect('/index.html');
 });
@@ -178,7 +166,8 @@ var server = app.listen(app.get('port'));
 // Loading and using socket.io
 var io = require('socket.io').listen(server);
 
-io.sockets.on('connection', function (socket) { // each socket is linked to a player
+// each socket is linked to a player
+io.sockets.on('connection', function (socket) {
   num_players++
   player_send_html(socket);
   socket.ban = false;
@@ -187,31 +176,12 @@ io.sockets.on('connection', function (socket) { // each socket is linked to a pl
   socket.id_player = shortid.generate();
 
   // ip
-  /*
-  //10.151.81.194
-  console.log(socket.client.conn.remoteAddress);
-  console.log(socket.conn.remoteAddress);
-  console.log(socket.handshake.address);
-  console.log(socket.request.socket._peername.address);
-  console.log(socket.request.connection._peername.address);
-  console.log(socket.request.client._peername.address);
-  */
-  /*
-  // 4:0.0.0.0:41403
-  console.log(socket.server.httpServer._connectionKey);
-  console.log(socket.request.socket.server._connectionKey);
-  console.log(socket.request.connection.server._connectionKey);
-  console.log(socket.request.client.server._connectionKey);
-  */
-  //console.dir(socket);
-  //console.dir(socket.handshake.headers['x-forwarded-for']);
   socket.ip_player = socket.handshake.headers['x-forwarded-for'];
- if (!socket.ip_player){
+  if (!socket.ip_player){
     socket.ip_player = socket.conn.remoteAddress;
   } 
 
   // Country
-  // socket.ip_player = undefined; // this line checks that there is no error when the ip is undefined
   socket.url = 'http://ipinfo.io/'+ socket.ip_player + '/json';
   request(socket.url, function(error, response, html) {
     if(!error) {
@@ -230,7 +200,8 @@ io.sockets.on('connection', function (socket) { // each socket is linked to a pl
   socket.on('pass_proposition', function (pass_to_test) {
     // http://stackoverflow.com/questions/4059147/check-if-a-variable-is-a-string
     if(typeof pass_to_test == 'string' || pass_to_test instanceof String) {
-      socket.pass = parseInt(ent.encode(String(pass_to_test)), 10); //ent, then conversion to base 10
+      //ent, then conversion to base 10 to prevent strange strings:
+      socket.pass = parseInt(ent.encode(String(pass_to_test)), 10);
       if(socket.pass > -0.5 & socket.pass < 9999.5) {
         socket.newDate = Date.now()/1000; //date in seconds
 
@@ -238,17 +209,17 @@ io.sockets.on('connection', function (socket) { // each socket is linked to a pl
           socket.emit('lose');
         }
         else if(socket.newDate - socket.oldDate < 0.5) {
+          // are you here only to read this feature?
           console.log('warning! Attempts are too close');
           socket.ban = true;
-          //against : 
-          //for (var i=0; i<10; i++) {
-          //  socket.emit('pass_proposition', ''+i);
-          //}
         }
         else {
-          console.log('( date: ' + socket.newDate + ' / pass: ' + socket.pass +
-                      ' / vault_num: ' + vault_num + ' / id: ' + socket.id_player + 
-                      ' / ip: ' + socket.ip_player + ' / pays: ' + socket.country + ')');
+          console.log('( date: ' + socket.newDate + 
+                      ' / pass: ' + socket.pass +
+                      ' / vault_num: ' + vault_num +
+                      ' / id: ' + socket.id_player + 
+                      ' / ip: ' + socket.ip_player +
+                      ' / country: ' + socket.country + ')');
 
           //mongo connexion
           var attempt = new AttemptsModel();
@@ -270,10 +241,6 @@ io.sockets.on('connection', function (socket) { // each socket is linked to a pl
           socket.win_vault_num = 0;
 
           if(socket.pass == true_pass) {
-            //socket.message = '<strong>' + socket.pass + 
-            //                 '</strong> is the correct pass! for the vault' +
-            //                 vault_num + '!';
-            //socket.emit('send_html', {message: socket.message});
             link = "chat.jpg";
             socket.emit('win', link);
 
@@ -281,8 +248,6 @@ io.sockets.on('connection', function (socket) { // each socket is linked to a pl
             new_vault_player(socket);
           }
           else {
-            //socket.message = '<p><strong>' + socket.pass + '</strong> nop </p>';
-            //socket.emit('send_html', {message: socket.message});
             socket.emit('lose');
           }
          socket.oldDate = socket.newDate;
@@ -300,12 +265,13 @@ io.sockets.on('connection', function (socket) { // each socket is linked to a pl
       else if( !(typeof nickname == 'string' || nickname instanceof String) ) {
         nickname = 'anonymous'; 
       }
-      if(nickname.length > 30) { //abcdefghijklmnopqrstuvwxyz
+      if(nickname.length > 30) {
         nickname = nickname.substr(0, 30);
       }
 
       socket.nickname = ent.encode(nickname);         
-      socket.message = 'The winner for the vault ' + socket.win_vault_num + ' is... ' + socket.nickname + '.';
+      socket.message = 'The winner for the vault ' + socket.win_vault_num +
+                       ' is... ' + socket.nickname + '.';
 
       //mongo connexion
       var win = new WinsModel();

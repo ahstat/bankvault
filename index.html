@@ -1,12 +1,10 @@
 <!DOCTYPE html>
 <html>
-<!-- 
-Hi there. If you're interested with the code, shoot me a mail ahstat on qq dot com. I added comments all along the html code.
--->
 <!--
+Hi there. If you're interested with the code, browse the sources here http://github.com/ahstat/bankvault
+Some links I used for this html part:
 http://www.faire-des-jeux.com/creer-jeu-video-html5-pong-1/
 http://www.fontspace.com/cedders/segment7
-http://www.premiumpixels.com/freebies/apple-ios-linen-texture/
 -->
 <head>
 <link href="img/favicon.ico" rel="shortcut icon"></link>
@@ -82,11 +80,11 @@ body {
   width:100%;
   border:0px;
   solid #FF0000;
-/*debug mode*/
-/*
+  /*debug mode*/
+  /*
   overflow-x: hidden;
   overflow-y: scroll;
-*/
+  */
 }
 
 .container {
@@ -97,11 +95,11 @@ body {
   width:100%;
   border:0px;
   solid #FF0000;
-/*debug mode*/
-/*
+  /*debug mode*/
+  /*
   overflow-x: hidden;
   overflow-y: scroll;
-*/
+  */
   overflow-y: hidden;
 }
 
@@ -124,22 +122,7 @@ a:hover
   padding: 0;
   margin: 0;
   font-size: 50%;
-}  
-
-/*
-span:hover .normal { display: none }
-.invisi { display: none }
-span:hover .invisi { display: inline }
-*/
-
-/*
-http://www.jackbarber.co.uk/notes/facebook-like-box-not-loading-in-hidden-element
-*/
-/*
-span:hover .normal { display: none }
-.invisi { opacity: 0; }
-span:hover .invisi { opacity: 100; }
-*/
+} 
 
 </style>
 </head>
@@ -180,7 +163,7 @@ span:hover .invisi { opacity: 100; }
   </span>
 
   <span style="float:right">
-    <span class="invisi"><a href = "https://ahstat.wordpress.com/" target="_blank">
+    <span class="invisi"><a href = "https://ahstat.github.io/" target="_blank">
       <li>by</li>
       <li>@ahstat</li></a>
     </span>
@@ -281,7 +264,9 @@ var init = function() {
 function reset() {
  colorNum = "#FF0000";
  drawNum(num);
- setTimeout(function(){num = "----"; num1 = "-"; num2 = "-"; num3 = "-"; num4 = "-"; reachedNum = 1; colorNum = "#00FF00"; drawNum(num); }, 500); //from 1 to 5
+ setTimeout(function() {
+              num = "----"; num1 = "-"; num2 = "-"; num3 = "-"; num4 = "-"; 
+              reachedNum = 1; colorNum = "#00FF00"; drawNum(num); }, 500); //from 1 to 5
  $("#main").fadeOut(500);
  $("#main").fadeIn(1);
 }
@@ -306,8 +291,6 @@ var win_img = function(link) {
     canvasTerrainContext.drawImage(imageObj, width/2 - 300 , 0); //300 cf width of the image is 600
   };
   imageObj.src = 'img/' + link;
-  //canvasTerrainContext.fillStyle = 'rgba(255, 255, 255, 0.2)'; //to remove, just to see
-  //canvasTerrainContext.fillRect(0,0,width,height); //to remove, just to see
 }
 
 ///////////////////////////////////////
