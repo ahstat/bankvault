@@ -4,7 +4,7 @@
 
 The app has been released at this address: <a href="https://bankvault.herokuapp.com" target="_blank">bankvault.herokuapp.com</a> (the loading may take some seconds).
 
-<center><a href="https://bankvault.herokuapp.com" target="_blank"><img src="img/screen.png" alt="title screen of the game"/></a></center>
+<a href="https://bankvault.herokuapp.com" target="_blank"><img align="center" src="img/screen.png" alt="title screen of the game"/></a>
 
 Let me know if some bugs appear in your browser (I know there is a font problem with IE; and the game does not work on cellphones).
 
